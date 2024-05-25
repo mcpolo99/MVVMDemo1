@@ -1,0 +1,184 @@
+﻿<Window x:Class="MVVMDemo1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MVVMDemo1"
+        xmlns:converters="clr-namespace:MVVM_LIB.Converters;assembly=MVVM-LIB"
+        xmlns:views="clr-namespace:MVVM_LIB.Views;assembly=MVVM-LIB"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+
+
+    <Window.Resources>
+        <converters:BooleanInverterConverter x:Key="BooleanInverterConverter"/>
+        
+        <Style x:Key="TestStyleScrollViewer" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Background" Value="AliceBlue"/>
+            <Setter Property="Foreground" Value="Green"/>
+            <!--<Setter Property="IsSelected" Value="{Binding IsSelected}"/>-->
+        </Style>
+        <Style x:Key="TestStyleItemsControl" TargetType="{x:Type ItemsControl}">
+            <Setter Property="Background" Value="AliceBlue"/>
+            <Setter Property="Foreground" Value="Green"/>
+            <!--<Setter Property="IsSelected" Value="{Binding IsSelected}"/>-->
+        </Style>
+        <Style x:Key="TestStyleContentControl" TargetType="{x:Type ContentControl}">
+            <Setter Property="Background" Value="AliceBlue"/>
+            <Setter Property="Foreground" Value="Green"/>
+            <!--<Setter Property="IsSelected" Value="{Binding IsSelected}"/>-->
+        </Style>
+
+
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!-- First and most basic display StudentViewModelObject THIS IS BEING INIT AS typeOf "StudentViewModel" IN THE MainViewModel.cs 
+        the "StudentViewModel" is also used in the base Context of user Control StudentView.xaml 
+        In this case we need to define all the controls ourselfs! NO CONTROLS ARE PREFIXED
+        
+        
+        -->
+        <Grid x:Name="First" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="90" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollViewer>
+                <ItemsControl Grid.Row="0" ItemsSource="{Binding StudentViewModelObject.Students}" Style="{StaticResource TestStyleItemsControl}" >
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" Text="{Binding FirstName}"/>
+                                    <TextBox Grid.Column="1" Text="{Binding LastName}"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding FullName , StringFormat='   {0}'  }"/>
+                                </Grid>
+                            </StackPanel>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Grid  Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ScrollViewer Grid.Row="0" Style="{StaticResource TestStyleScrollViewer}">
+                    <ListBox ItemsSource="{Binding StudentViewModelObject.Students}" SelectedItem="{Binding SelectedStudent}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FullName}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                </ScrollViewer>
+       
+            </Grid>
+            <Grid Grid.Row="2">
+                <StackPanel Grid.Row="1" Grid.Column="1">
+                    <TextBlock Text="Selected Student Details:" FontWeight="Bold" Margin="5"/>
+                    <TextBlock Text="{Binding SelectedStudent.FirstName , StringFormat= Firstname {0} }" Margin="5"/>
+                    <TextBlock Text="{Binding SelectedStudent.LastName,StringFormat= LastName {0}}" Margin="5"/>
+                    <Button Content="Delete Selected" Command="{Binding CommandDeleteStudent}" CommandParameter="{Binding SelectedStudent}"/>
+                    <TextBox x:Name="NEWNAME" Text="{Binding Person.FullName, Mode=TwoWay , UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+                    <Button Content="Add Selected" Command="{Binding CommandAddStudent}" CommandParameter="{Binding ElementName=NEWNAME, Path=Text}" IsEnabled="{Binding ElementName=NEWNAME, Path=(Validation.HasError) , Converter={StaticResource BooleanInverterConverter}}"/>
+                    <TextBox x:Name="NEWNAME1" Text="{Binding ElementName=NEWNAME, Path=Text, Mode=OneWay}"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <!--Second more advanced display StudentViewObject  This is being init as typeOf "StudentView" (UserControll)  IN THE MainViewModel.cs  
+        The "StudentView" IS a UserControl StudentView.xaml
+        In this case we can only add new controls that are outside of the "StudentView", The "StudentView" will remain intact as it is! 
+        
+        -->
+        <Grid x:Name="Second" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" >
+                <TextBlock Text="RealTime Update text from textbox"/>
+                <TextBlock Text="{Binding Person.FirstName}"/> 
+                <TextBox Text="{Binding Person.FirstName, Mode=OneWayToSource , UpdateSourceTrigger=PropertyChanged}" Background="#FFBDA0A0" FontWeight="Bold" AutomationProperties.HelpText="Write the name here"/>
+                
+          
+                
+            
+            </StackPanel>
+            <StackPanel Grid.Row="1">
+                <TextBlock  Background="AliceBlue" >
+                    <Run Text="Live Selected Name:  "/>
+                    <Run Text="{Binding StudentViewObject.SelectedStudent.FirstName}"/>
+
+                </TextBlock>
+                <StackPanel x:Name="StackPanelGetName" Orientation="Vertical" Grid.Row="2">
+                    <TextBlock Text="{Binding SelectedStudentFirstName , StringFormat=SelectedStudentFirstName: {0} }"/>
+
+                    <Button  Command="{Binding GetName}" >
+                        <TextBlock Text="Button to update SelectedStudentFirstName" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </Button>
+                    <TextBlock Text="By Clicking TextBlock Below, SelectedStudentFirstName will be updated" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding StudentViewObject.SelectedStudent.FirstName , StringFormat=First Name: {0}}"  Background="Aqua">
+                        <TextBlock.InputBindings>
+                            <MouseBinding Gesture="LeftClick" Command="{Binding GetName}" />
+                        </TextBlock.InputBindings>
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+            <ContentControl Grid.Row="2" Content="{Binding StudentViewObject}"   Style="{StaticResource TestStyleContentControl }"/>
+        </Grid>
+
+        <!--Third more advanced display, This is being init as typeOf "StudentView" (UserControll) DIRECTLY IN THE XAML FILE 
+        as name "StudentViewControl" (reason for name is so we can refer to it in other controls).
+        Here also the "StudentView" stays intact to the design!
+        so the VIEW is ALready Defined and cannot be changed other then the additional customControls we add on the side!
+        
+        
+        -->
+        <Grid x:Name="Third" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <!--<RowDefinition/>-->
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <TextBlock>
+                        <Run Text="First Name: "/>
+                        <Run Text="{Binding ElementName=StudentViewControl , Path=SelectedStudent.FirstName}"/>
+                </TextBlock>
+                <TextBlock>
+                        <Run Text="Second Name: "/>
+                        <Run Text="{Binding ElementName=StudentViewControl , Path=SelectedStudent.LastName}"/>
+                </TextBlock>
+                <TextBlock>
+                    <Run Text="Full Name: "/>
+                    <Run Text="{Binding ElementName=StudentViewControl , Path=SelectedStudent.FullName ,Mode=OneWay}"/>
+                </TextBlock>
+                <!--<TextBlock Text="{Binding ElementName=StudentViewControl, Path=SelectedStudent.FullName}"/>-->
+                <Button Content="Button to log send a message in the log" Command="{Binding ConsoleLog}" CommandParameter="{Binding ElementName=StudentViewControl, Path=SelectedStudent.FullName}"/>
+                <Button Content="Button to log Whatever" Command="{Binding ConsoleLog}" CommandParameter="{Binding Person.FirstName}"/>
+            </StackPanel>
+            <views:StudentView Grid.Row="1" x:Name="StudentViewControl"/>
+
+        </Grid>
+    </Grid>
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+</Window>
