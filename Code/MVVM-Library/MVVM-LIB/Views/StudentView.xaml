@@ -53,8 +53,8 @@
             <Label Content="Last Name" Grid.Row="0" Grid.Column="1"/>
             <TextBox x:Name="TBFirstName" Grid.Row="1" Grid.Column="0" Text="{Binding NewStudentFirstName, Mode=TwoWay , UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
             <TextBox x:Name="TBLastName" Grid.Row="1" Grid.Column="1" Text="{Binding NewStudentLastName, Mode=TwoWay , UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
-            <Button Content="Add" Grid.Row="2" Grid.Column="0" Command="{Binding AddStudentCommand}" IsEnabled="{Binding ElementName=TBFirstName , Path=(Validation.HasError) , Converter={StaticResource BooleanInverterConverter}}" />
-            <Button Content="Delete Selected" Grid.Row="2" Grid.Column="1" Command="{Binding DelStudentCommand}"/>
+            <Button Content="Add New" Grid.Row="2" Grid.Column="0" Command="{Binding CommandAddStudent}" IsEnabled="{Binding ElementName=TBFirstName , Path=(Validation.HasError) , Converter={StaticResource BooleanInverterConverter}}" />
+            <Button Content="Delete Selected" Grid.Row="2" Grid.Column="1" Command="{Binding CommandDeleteStudent}"/>
         </Grid>
     </Grid>
     <UserControl.DataContext>

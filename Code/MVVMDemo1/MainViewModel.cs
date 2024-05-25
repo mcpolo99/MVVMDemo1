@@ -194,7 +194,6 @@ namespace MVVMDemo1
 
 
 
-        //Public CommanderWrapper 'name of the command'( "what to actually execute " )
 
 
     }

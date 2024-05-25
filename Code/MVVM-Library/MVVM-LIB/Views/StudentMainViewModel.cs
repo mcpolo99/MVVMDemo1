@@ -19,6 +19,8 @@ namespace MVVM_LIB.Views
     {
         public StudentMainViewModel()
         {
+            CommandAddStudent = new UICommand1("CommandAddStudent", new RelayCommandHandlerObject(ExecuteCommandAddStudent), "", "");
+            CommandDeleteStudent = new UICommand1("CommandDeleteStudent", new RelayCommandHandlerObject(ExecuteCommandDeleteStudent), "", "");
             this.LoadStudent();
         }
 
@@ -106,28 +108,27 @@ namespace MVVM_LIB.Views
 
 
 
-        //---------------------DELETE STUDENT COMMAND------------------------------------
+
+
+        //--------------------------
+        public UICommand1 CommandAddStudent { get; private set; }
+        public UICommand1 CommandDeleteStudent { get; private set; }
+
+
+        //---------------------ADD STUDENT COMMAND------------------------------------
         private ICommand _addStudentCommand; public ICommand AddStudentCommand
         {
             get
             {
                 if (this._addStudentCommand == null)
                 {
-                    return this._addStudentCommand ?? (_addStudentCommand = new RelayCommandHandler(() => ExecuteAddStudent()));
+                    return this._addStudentCommand ?? (_addStudentCommand = new RelayCommandHandler(() => ExecuteCommandAddStudent()));
                 }
                 return _addStudentCommand;
             }
         }
-        private void ExecuteAddStudent()
+        private void ExecuteCommandAddStudent()
         {
-            /*
-            How would i pass the values from the 2 textboxes inside of StudentView.Xaml
-                  < TextBox x: Name = "TBFirstName" Grid.Row = "1" Grid.Column = "0" />
-                  < TextBox x: Name = "TBLastName" Grid.Row = "1" Grid.Column = "1" />
-            to the auctual command that need to be executed like this:
-
-                Students.Add(new StudentModel { FirstName = firstname, LastName = lastname });
-            */
             if (!string.IsNullOrWhiteSpace(NewStudentFirstName) && !string.IsNullOrWhiteSpace(NewStudentLastName))
             {
                 Students.Add(new StudentModel { FirstName = NewStudentFirstName, LastName = NewStudentLastName });
@@ -143,30 +144,14 @@ namespace MVVM_LIB.Views
             {
                 if (this._delStudentCommand == null)
                 {
-                    return this._delStudentCommand ?? (_delStudentCommand = new RelayCommandHandler(() => ExecuteDelSelectedStudent()));
+                    return this._delStudentCommand ?? (_delStudentCommand = new RelayCommandHandler(() => ExecuteCommandDeleteStudent()));
                 }
                 return _delStudentCommand;
             }
         }
  
-        private void ExecuteDelSelectedStudent()
+        private void ExecuteCommandDeleteStudent()
         {
-            /*
-              And for the deleteSelectedStudent? how would I even make this work, The selected item should probably come from ListBoxStudents SelectedItem??
-
-             But since we needed to implement this code inbehind the Xaml file:
-                    public static readonly DependencyProperty SelectedStudentProperty =DependencyProperty.Register("SelectedStudent", typeof(StudentModel), typeof(StudentView));
-        
-         
-        public StudentModel SelectedStudent
-        {
-            get { return (StudentModel)GetValue(SelectedStudentProperty); }
-            set { SetValue(SelectedStudentProperty, value); }
-        }
-
-            Can i make use of it in some way or do i need to make separate property for the delete command?
-
-             */
             if (SelectedStudent != null)
             {
                 Students.Remove(SelectedStudent);
